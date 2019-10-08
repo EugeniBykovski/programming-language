@@ -10,6 +10,22 @@
 
 // Первая часть синтаксического анализатора
 
+do(define(x, 10),
+    if ( > (x, 5),
+        print("large"),
+        print("small"))
+)
+
+{
+    type: "apply",
+    operator: { type: "word", name: ">" },
+    args: [
+        { type: "word", name: "x" },
+        { type: "value", value: 5 }
+    ]
+}
+
+
 /*
   Синтаксический анализатор строит структуру данных, тип которой зависит от того, какому их этих жлементов соответствует строка.
   Если входные данные не соответствуют ни одной из трех форм (строки, числа, слова), значит, это недопустимое выражение и анализатор выдает ошибку.
@@ -46,7 +62,7 @@ function skipSpace(string) { // функция удаляет пробелы в 
 
 function parseApply(exep, program) {
     program = skipSpace(program);
-    if (program[0] ~ = "(") {
+    if (program[0] != "(") {
         return { expr: expr, rest: program };
     }
 
@@ -64,3 +80,15 @@ function parseApply(exep, program) {
     }
     return parseApply(expr, program.slice(1));
 }
+
+// Функция parse проверяет, достигнут ли конец входной строки после синтаксического анализа выражения,
+// и представляет нам структуру данных, описывающую программу.
+
+function parse(program) {
+    let { expr, rest } = parseExpression(program);
+    if (skipSpace(rest).length > 0) {
+        throw new SyntaxError("Неожиданный текст после программы!");
+    }
+    return expr;
+}
+console.log(parse("+(a, 10)"));
